@@ -1,0 +1,40 @@
+registry:
+    uspto:
+        dateAdded: "2025-03-13T00:00:00Z"
+        description: MCP Server for USPTO APIs - search patents, check trademark status, browse PTAB proceedings, and query USPTO datasets.
+        icon: ""
+        image: uspto-mcp-server:latest
+        metadata:
+            category: legal
+            license: MIT
+            owner: anaranillc
+            tags:
+                - uspto
+                - patents
+                - trademarks
+                - intellectual-property
+        prompts: 0
+        ref: ""
+        resources: {}
+        secrets:
+            - description: "Your USPTO API key from https://developer.uspto.gov"
+              env: USPTO_API_KEY
+              example: your_api_key_here
+              name: uspto.api_key
+        env:
+            - name: USPTO_API_KEY
+        source: https://github.com/anaranillc/uspto-mcp-server
+        title: USPTO
+        tools:
+            - name: trademark_status
+            - name: trademark_multi_status
+            - name: trademark_documents
+            - name: trademark_last_update
+            - name: list_datasets
+            - name: list_dataset_fields
+            - name: search_dataset
+            - name: patent_search
+            - name: list_bulk_data_products
+            - name: ptab_search
+        type: server
+        upstream: https://github.com/anaranillc/uspto-mcp-server
