@@ -23,6 +23,15 @@ registry:
               name: uspto.api_key
         env:
             - name: USPTO_API_KEY
+              value: '{{uspto.api_key}}'
+        config:
+            - name: uspto
+              description: USPTO API credentials from https://developer.uspto.gov
+              type: object
+              properties:
+                  api_key:
+                      type: string
+                      description: Your USPTO API key for accessing ODP and TSDR endpoints
         source: https://github.com/anaranillc/uspto-mcp-server
         title: USPTO
         tools:
