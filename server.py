@@ -1,30 +1,22 @@
-"""
-USPTO MCP Server - Model Context Protocol server for the USPTO APIs.
-
-Provides tools for:
-- Trademark status lookup (TSDR API)
-- Trademark document retrieval
-- Multi-case trademark status
-- USPTO dataset search (DS-API)
-- Patent/Trademark data field listing
-"""
+"""USPTO MCP Server - Model Context Protocol server for the USPTO APIs."""
 
 import os
+import sys
 import json
 import logging
 import httpx
-from typing import Any, Optional
+from typing import Any
 from mcp.server.fastmcp import FastMCP
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
+# Configure logging to stderr so it doesn't interfere with stdio MCP transport
+logging.basicConfig(level=logging.INFO, stream=sys.stderr)
 logger = logging.getLogger("uspto-mcp-server")
 
 # --- Configuration ---
 USPTO_API_KEY = os.environ.get("USPTO_API_KEY", "")
 TSDR_BASE_URL = "https://tsdrapi.uspto.gov"
 DS_API_BASE_URL = "https://developer.uspto.gov/ds-api"
-ODP_BASE_URL = "https://data.uspto.gov"
+ODP_BASE_URL = "https://api.uspto.gov"
 
 # Rate limit: 60 req/min for TSDR, 4 req/min for PDF/ZIP downloads
 
@@ -82,16 +74,7 @@ async def trademark_status(
     case_id: str,
     id_type: str = "sn",
 ) -> str:
-    """
-    Look up the status of a US trademark application or registration.
-
-    Args:
-        case_id: The case identifier number (e.g., "97123456" for serial number, "1234567" for registration number).
-        id_type: Type of identifier. One of: "sn" (serial number, default), "rn" (registration number), "ref" (reference number), "ir" (international registration).
-
-    Returns:
-        Trademark case status information in XML format including filing date, status, mark text, owner info, etc.
-    """
+    """Look up the status of a US trademark application or registration. case_id is the identifier number. id_type is one of sn (serial number, default), rn (registration number), ref (reference number), ir (international registration)."""
     if not USPTO_API_KEY:
         return "Error: USPTO_API_KEY environment variable is not set. Please configure your API key."
 
@@ -125,19 +108,10 @@ async def trademark_status(
 # ============================================================
 @mcp.tool()
 async def trademark_multi_status(
-    case_ids: list[str],
+    case_ids: str,
     id_type: str = "sn",
 ) -> str:
-    """
-    Look up the status of multiple trademark cases at once.
-
-    Args:
-        case_ids: List of case identifier numbers (e.g., ["97123456", "97654321"]).
-        id_type: Type of identifiers. One of: "sn" (serial number, default), "rn" (registration number), "ref" (reference number), "ir" (international registration).
-
-    Returns:
-        JSON with status details for all requested trademark cases.
-    """
+    """Look up the status of multiple trademark cases at once. case_ids is a comma-separated string of identifier numbers. id_type is one of sn (default), rn, ref, ir."""
     if not USPTO_API_KEY:
         return "Error: USPTO_API_KEY environment variable is not set."
 
@@ -147,7 +121,8 @@ async def trademark_multi_status(
 
     url = f"{TSDR_BASE_URL}/ts/cd/caseMultiStatus/{id_type}"
     headers = _tsdr_headers()
-    params = {"ids": ",".join(case_ids)}
+    # case_ids is a comma-separated string; pass it directly
+    params = {"ids": case_ids}
 
     try:
         result = await _http_get(url, headers, params)
@@ -168,16 +143,7 @@ async def trademark_documents(
     case_id: str,
     id_type: str = "sn",
 ) -> str:
-    """
-    List all prosecution documents for a trademark case.
-
-    Args:
-        case_id: The case identifier number.
-        id_type: Type of identifier. One of: "sn" (serial number, default), "rn" (registration number), "ref" (reference number), "ir" (international registration).
-
-    Returns:
-        XML listing of all documents filed for the trademark case including document IDs, types, and dates.
-    """
+    """List all prosecution documents for a trademark case. case_id is the identifier number. id_type is one of sn (default), rn, ref, ir."""
     if not USPTO_API_KEY:
         return "Error: USPTO_API_KEY environment variable is not set."
 
@@ -205,15 +171,7 @@ async def trademark_documents(
 async def trademark_last_update(
     serial_number: str,
 ) -> str:
-    """
-    Check when a trademark case was last updated in the prosecution history.
-
-    Args:
-        serial_number: The US serial number of the trademark application (e.g., "97123456").
-
-    Returns:
-        JSON with the last update timestamp for the trademark prosecution history.
-    """
+    """Check when a trademark case was last updated in the prosecution history. serial_number is the US serial number of the trademark application."""
     if not USPTO_API_KEY:
         return "Error: USPTO_API_KEY environment variable is not set."
 
@@ -239,12 +197,7 @@ async def trademark_last_update(
 # ============================================================
 @mcp.tool()
 async def list_datasets() -> str:
-    """
-    List all available USPTO data sets that can be searched.
-
-    Returns:
-        JSON list of available datasets with their API keys, versions, and documentation URLs.
-    """
+    """List all available USPTO datasets that can be searched. Returns JSON with dataset names, versions, and documentation URLs."""
     url = f"{DS_API_BASE_URL}/"
     headers = _ds_api_headers()
 
@@ -265,16 +218,7 @@ async def list_dataset_fields(
     dataset: str = "oa_citations",
     version: str = "v1",
 ) -> str:
-    """
-    List the searchable fields for a specific USPTO dataset.
-
-    Args:
-        dataset: The dataset name (e.g., "oa_citations"). Use list_datasets() to see available datasets.
-        version: The dataset version (e.g., "v1").
-
-    Returns:
-        JSON list of field names that can be used in search queries.
-    """
+    """List the searchable fields for a specific USPTO dataset. dataset defaults to oa_citations. version defaults to v1. Use list_datasets to see available datasets."""
     url = f"{DS_API_BASE_URL}/{dataset}/{version}/fields"
     headers = _ds_api_headers()
 
@@ -302,19 +246,7 @@ async def search_dataset(
     start: int = 0,
     rows: int = 25,
 ) -> str:
-    """
-    Search a USPTO dataset using Lucene query syntax.
-
-    Args:
-        query: Search query in Lucene syntax (e.g., "patent_title:artificial AND patent_title:intelligence"). Use "*:*" to match all records.
-        dataset: The dataset name (e.g., "oa_citations"). Use list_datasets() to see available datasets.
-        version: The dataset version (e.g., "v1").
-        start: Starting record offset for pagination (default 0).
-        rows: Number of records to return (default 25, max 100).
-
-    Returns:
-        JSON array of matching records from the dataset.
-    """
+    """Search a USPTO dataset using Lucene query syntax. query uses Lucene syntax like patent_title:artificial. dataset defaults to oa_citations. start and rows control pagination (max 100 rows)."""
     url = f"{DS_API_BASE_URL}/{dataset}/{version}/records"
     headers = {
         "Accept": "application/json",
@@ -348,21 +280,11 @@ async def patent_search(
     start: int = 0,
     rows: int = 25,
 ) -> str:
-    """
-    Search for US patents on the USPTO Open Data Portal.
-
-    Args:
-        query: Search query (e.g., "artificial intelligence", patent number like "11123456", or inventor name).
-        start: Starting record offset for pagination (default 0).
-        rows: Number of records to return (default 25).
-
-    Returns:
-        JSON with matching patent records including patent numbers, titles, inventors, assignees, and filing dates.
-    """
+    """Search for US patents on the USPTO Open Data Portal. query can be keywords, a patent number, or inventor name. start and rows control pagination."""
+    if not USPTO_API_KEY:
+        return "Error: USPTO_API_KEY environment variable is not set. The ODP API requires an API key."
     url = f"{ODP_BASE_URL}/api/v1/patent/applications/search"
-    headers = {"Accept": "application/json"}
-    if USPTO_API_KEY:
-        headers["X-API-KEY"] = USPTO_API_KEY
+    headers = {"Accept": "application/json", "X-API-KEY": USPTO_API_KEY}
     params = {
         "query": query,
         "start": start,
@@ -387,19 +309,11 @@ async def patent_search(
 async def list_bulk_data_products(
     search_query: str = "",
 ) -> str:
-    """
-    List available USPTO bulk data products for download.
-
-    Args:
-        search_query: Optional search term to filter products (e.g., "Grants", "Trademarks"). Leave empty for all products.
-
-    Returns:
-        JSON list of available bulk data products with titles, descriptions, and download information.
-    """
+    """List available USPTO bulk data products for download. search_query optionally filters by keyword like Grants or Trademarks. Leave empty for all products."""
+    if not USPTO_API_KEY:
+        return "Error: USPTO_API_KEY environment variable is not set. The ODP API requires an API key."
     url = f"{ODP_BASE_URL}/api/v1/datasets/products/search"
-    headers = {"Accept": "application/json"}
-    if USPTO_API_KEY:
-        headers["X-API-KEY"] = USPTO_API_KEY
+    headers = {"Accept": "application/json", "X-API-KEY": USPTO_API_KEY}
 
     params: dict[str, Any] = {"latest": "true"}
     if search_query:
@@ -425,21 +339,11 @@ async def ptab_search(
     start: int = 0,
     rows: int = 25,
 ) -> str:
-    """
-    Search Patent Trial and Appeal Board (PTAB) proceedings.
-
-    Args:
-        query: Search query for PTAB proceedings (e.g., patent number, party name, proceeding number like "IPR2023-00123").
-        start: Starting record offset for pagination (default 0).
-        rows: Number of records to return (default 25).
-
-    Returns:
-        JSON with matching PTAB proceedings including proceeding numbers, types (IPR, PGR, CBM), parties, patent info, and status.
-    """
+    """Search Patent Trial and Appeal Board (PTAB) proceedings. query can be a patent number, party name, or proceeding number like IPR2023-00123. start and rows control pagination."""
+    if not USPTO_API_KEY:
+        return "Error: USPTO_API_KEY environment variable is not set. The ODP API requires an API key."
     url = f"{ODP_BASE_URL}/api/v1/patent/trials/proceedings/search"
-    headers = {"Accept": "application/json"}
-    if USPTO_API_KEY:
-        headers["X-API-KEY"] = USPTO_API_KEY
+    headers = {"Accept": "application/json", "X-API-KEY": USPTO_API_KEY}
     params = {
         "query": query,
         "start": start,
