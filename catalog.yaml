@@ -21,9 +21,15 @@ registry:
               env: USPTO_API_KEY
               example: your_api_key_here
               name: uspto.api_key
+            - description: "Your PatentsView API key from https://patentsview.org (free, for patent search)"
+              env: PATENTSVIEW_API_KEY
+              example: your_patentsview_key_here
+              name: patentsview.api_key
         env:
             - name: USPTO_API_KEY
               value: '{{uspto.api_key}}'
+            - name: PATENTSVIEW_API_KEY
+              value: '{{patentsview.api_key}}'
         config:
             - name: uspto
               description: USPTO API credentials from https://developer.uspto.gov
@@ -32,6 +38,13 @@ registry:
                   api_key:
                       type: string
                       description: Your USPTO API key for accessing ODP and TSDR endpoints
+            - name: patentsview
+              description: PatentsView API credentials from https://patentsview.org (free)
+              type: object
+              properties:
+                  api_key:
+                      type: string
+                      description: Your PatentsView API key for patent search (primary backend)
         source: https://github.com/anaranillc/uspto-mcp-server
         title: USPTO
         tools:
@@ -43,6 +56,8 @@ registry:
             - name: list_dataset_fields
             - name: search_dataset
             - name: patent_search
+            - name: patent_lookup
+            - name: patent_documents
             - name: list_bulk_data_products
             - name: ptab_search
         type: server

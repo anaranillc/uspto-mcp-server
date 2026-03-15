@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /c/Users/Molt.Bot/projects/uspto-mcp-server -type f -name *.json)",
+      "WebFetch(domain:api.patentsview.org)",
+      "WebFetch(domain:patentsview.org)",
+      "WebFetch(domain:search.patentsview.org)",
+      "WebFetch(domain:developer.uspto.gov)",
+      "WebFetch(domain:github.com)",
+      "Bash(python -c \"import server; print\\(''Server module loaded OK''\\); print\\(f''Tools: {len\\(server.mcp._tool_manager._tools\\)}''\\); [print\\(f''  - {name}''\\) for name in server.mcp._tool_manager._tools.keys\\(\\)]\")",
+      "Bash(python -c \":*)",
+      "WebFetch(domain:data.uspto.gov)",
+      "WebFetch(domain:api.uspto.gov)",
+      "Bash(firecrawl scrape:*)",
+      "Bash(npm install:*)",
+      "Bash(firecrawl --status)",
+      "Bash(firecrawl login:*)",
+      "mcp__MCP_DOCKER__fetch",
+      "Bash(python -c \"import py_compile; py_compile.compile\\(''server.py'', doraise=True\\); print\\(''Syntax OK''\\)\")",
+      "Bash(docker build:*)",
+      "Bash(docker run:*)",
+      "Bash(printf '{\"\"\"\"jsonrpc\"\"\"\":\"\"\"\"2.0\"\"\"\",\"\"\"\"id\"\"\"\":1,\"\"\"\"method\"\"\"\":\"\"\"\"initialize\"\"\"\",\"\"\"\"params\"\"\"\":{\"\"\"\"protocolVersion\"\"\"\":\"\"\"\"2024-11-05\"\"\"\",\"\"\"\"capabilities\"\"\"\":{},\"\"\"\"clientInfo\"\"\"\":{\"\"\"\"name\"\"\"\":\"\"\"\"test\"\"\"\",\"\"\"\"version\"\"\"\":\"\"\"\"1.0\"\"\"\"}}}\\\\n{\"\"\"\"jsonrpc\"\"\"\":\"\"\"\"2.0\"\"\"\",\"\"\"\"id\"\"\"\":2,\"\"\"\"method\"\"\"\":\"\"\"\"notifications/initialized\"\"\"\"}\\\\n{\"\"\"\"jsonrpc\"\"\"\":\"\"\"\"2.0\"\"\"\",\"\"\"\"id\"\"\"\":3,\"\"\"\"method\"\"\"\":\"\"\"\"tools/list\"\"\"\",\"\"\"\"params\"\"\"\":{}}\\\\n')",
+      "Bash(python -c \"import sys,json; data=json.load\\(sys.stdin\\); tools=data[''''result''''][''''tools'''']; print\\(f''''Total tools: {len\\(tools\\)}''''\\); [print\\(f''''  {i+1}. {t[\"\"name\"\"]}''''\\) for i,t in enumerate\\(tools\\)]\")"
+    ]
+  }
+}
