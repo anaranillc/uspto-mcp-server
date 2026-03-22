@@ -58,7 +58,305 @@ registry:
             - name: patent_search
             - name: patent_lookup
             - name: patent_documents
+            - name: patent_application_detail
+            - name: patent_status_codes
             - name: list_bulk_data_products
             - name: ptab_search
+            - name: ptab_detail
+            - name: ptab_trial_decisions_search
+            - name: ptab_trial_documents_search
+            - name: petition_decisions_search
+            - name: patent_appeals_search
+            - name: patent_interferences_search
         type: server
         upstream: https://github.com/anaranillc/uspto-mcp-server
+
+    sec-edgar:
+        dateAdded: "2026-03-16T00:00:00Z"
+        description: SEC EDGAR MCP Server - search and retrieve SEC filings, company data, and financial documents from the EDGAR database.
+        icon: ""
+        image: mcp/sec-edgar:latest
+        metadata:
+            category: legal
+            license: MIT
+            tags:
+                - sec
+                - edgar
+                - filings
+                - securities
+                - contracts
+        prompts: 0
+        ref: ""
+        resources: {}
+        source: https://github.com/stefanoamorelli/sec-edgar-mcp
+        title: SEC EDGAR
+        tools:
+            - name: search_filings
+            - name: get_filing_content
+            - name: get_company_facts
+            - name: get_company_concept
+            - name: search_efts
+        type: server
+        upstream: https://hub.docker.com/r/mcp/sec-edgar
+
+    shopify:
+        dateAdded: "2026-03-16T00:00:00Z"
+        description: Official Shopify MCP Server - manage products, orders, collections, customers, and storefront data.
+        icon: ""
+        image: mcp/shopify:latest
+        metadata:
+            category: ecommerce
+            license: MIT
+            owner: shopify
+            tags:
+                - shopify
+                - ecommerce
+                - products
+                - orders
+        prompts: 0
+        ref: ""
+        resources: {}
+        secrets:
+            - description: Shopify store access token
+              env: SHOPIFY_ACCESS_TOKEN
+              example: shpat_xxxxx
+              name: shopify.access_token
+            - description: Shopify store domain (e.g. mystore.myshopify.com)
+              env: SHOPIFY_STORE_DOMAIN
+              example: mystore.myshopify.com
+              name: shopify.store_domain
+        env:
+            - name: SHOPIFY_ACCESS_TOKEN
+              value: '{{shopify.access_token}}'
+            - name: SHOPIFY_STORE_DOMAIN
+              value: '{{shopify.store_domain}}'
+        source: https://shopify.dev/docs/apps/build/devmcp
+        title: Shopify
+        tools:
+            - name: shopify_products
+            - name: shopify_orders
+            - name: shopify_collections
+            - name: shopify_customers
+        type: server
+        upstream: https://hub.docker.com/r/mcp/shopify
+
+    printify:
+        dateAdded: "2026-03-16T00:00:00Z"
+        description: Printify MCP Server - manage print-on-demand products, shops, orders, and catalog on Printify.
+        icon: ""
+        image: printify-mcp:latest
+        metadata:
+            category: ecommerce
+            license: MIT
+            tags:
+                - printify
+                - print-on-demand
+                - products
+                - ecommerce
+        prompts: 0
+        ref: ""
+        resources: {}
+        secrets:
+            - description: Printify API key from https://printify.com/app (My Profile > Connections)
+              env: PRINTIFY_API_KEY
+              example: your_printify_api_key
+              name: printify.api_key
+        env:
+            - name: PRINTIFY_API_KEY
+              value: '{{printify.api_key}}'
+        source: https://github.com/TSavo/printify-mcp
+        title: Printify
+        tools:
+            - name: list-shops
+            - name: list-products
+            - name: get-product
+            - name: create-product
+            - name: update-product
+            - name: list-orders
+            - name: get-order
+            - name: list-blueprints
+            - name: list-print-providers
+        type: server
+        upstream: https://github.com/TSavo/printify-mcp
+
+    meta-ads:
+        dateAdded: "2026-03-16T00:00:00Z"
+        description: Meta Ads MCP Server - manage Facebook and Instagram ad campaigns, ad sets, ads, and reporting via the Meta Marketing API.
+        icon: ""
+        image: meta-ads-mcp:latest
+        metadata:
+            category: marketing
+            license: MIT
+            tags:
+                - meta
+                - facebook
+                - instagram
+                - ads
+                - marketing
+        prompts: 0
+        ref: ""
+        resources: {}
+        secrets:
+            - description: Meta (Facebook) access token for Marketing API
+              env: META_ACCESS_TOKEN
+              example: your_meta_access_token
+              name: meta-ads.access_token
+        env:
+            - name: META_ACCESS_TOKEN
+              value: '{{meta-ads.access_token}}'
+        source: https://github.com/pipeboard-co/meta-ads-mcp
+        title: Meta Ads
+        tools:
+            - name: mcp_meta_ads_get_ad_accounts
+            - name: mcp_meta_ads_get_account_info
+            - name: mcp_meta_ads_get_account_pages
+            - name: mcp_meta_ads_get_campaigns
+            - name: mcp_meta_ads_get_campaign_details
+            - name: mcp_meta_ads_create_campaign
+            - name: mcp_meta_ads_get_adsets
+            - name: mcp_meta_ads_get_ads
+            - name: mcp_meta_ads_create_ad
+            - name: mcp_meta_ads_get_insights
+        type: server
+        upstream: https://github.com/pipeboard-co/meta-ads-mcp
+
+    sec-contract:
+        dateAdded: "2026-03-16T00:00:00Z"
+        description: SEC EDGAR Contract Search - search material contracts, extract clauses, compare contract terms across filings.
+        icon: ""
+        image: sec-contract-mcp:latest
+        metadata:
+            category: legal
+            license: MIT
+            tags:
+                - sec
+                - contracts
+                - edgar
+                - legal
+                - clauses
+        prompts: 0
+        ref: ""
+        resources: {}
+        source: https://github.com/anaranillc/sec-contract-mcp
+        title: SEC Contracts
+        tools:
+            - name: lookup_company
+            - name: search_contracts
+            - name: list_exhibits
+            - name: get_contract_text
+            - name: extract_clauses
+            - name: find_comparable_clauses
+        type: server
+        upstream: https://github.com/anaranillc/sec-contract-mcp
+
+    metricool:
+        dateAdded: "2026-03-16T00:00:00Z"
+        description: Official Metricool MCP server built locally from metricool/mcp-metricool for reliable Docker stdio use.
+        title: Metricool
+        type: server
+        image: metricool-mcp-local:1.1.9
+        ref: ""
+        env:
+            - name: METRICOOL_USER_TOKEN
+              value: '{{metricool.api_key}}'
+            - name: METRICOOL_USER_ID
+              value: '4321869'
+        metadata:
+            category: marketing
+            license: Proprietary
+            owner: metricool
+            tags:
+                - metricool
+                - social-media
+                - analytics
+                - ads
+                - docker
+        secrets:
+            - name: metricool.api_key
+              env: METRICOOL_USER_TOKEN
+              example: <YOUR_METRICOOL_USER_TOKEN>
+        prompts: 0
+        resources: {}
+        source: https://github.com/metricool/mcp-metricool
+        upstream: https://github.com/metricool/mcp-metricool
+        tools:
+            - name: get_brands
+            - name: get_brands_complete
+            - name: get_instagram_reels
+            - name: get_instagram_posts
+            - name: get_instagram_stories
+            - name: get_tiktok_videos
+            - name: get_facebook_reels
+            - name: get_facebook_posts
+            - name: get_facebook_stories
+            - name: get_thread_posts
+            - name: get_x_posts
+            - name: get_bluesky_posts
+            - name: get_linkedin_posts
+            - name: get_pinterest_pins
+            - name: get_youtube_videos
+            - name: get_twitch_videos
+            - name: get_facebookads_campaigns
+            - name: get_googleads_campaigns
+            - name: get_tiktokads_campaigns
+            - name: get_network_competitors
+            - name: get_network_competitors_posts
+            - name: post_schedule_post
+            - name: get_scheduled_posts
+            - name: get_best_time_to_post
+            - name: update_schedule_post
+            - name: get_metrics
+            - name: get_analytics
+            - name: get_pinterest_boards
+
+    meta-ads-remote:
+        dateAdded: "2026-03-16T00:00:00Z"
+        description: Pipeboard Meta Ads Remote MCP for Facebook and Instagram ad analysis and management.
+        title: Meta Ads Remote
+        type: remote
+        dynamic:
+            tools: true
+        ref: ""
+        remote:
+            transport_type: streamable-http
+            url: "https://meta-ads.mcp.pipeboard.co/?token=pk_89f5caf9a08044008cd987c49c9df216"
+        metadata:
+            category: marketing
+            license: BSL-1.1
+            owner: pipeboard
+            tags:
+                - meta
+                - facebook
+                - instagram
+                - ads
+                - remote
+        prompts: 0
+        resources: {}
+        source: https://github.com/pipeboard-co/meta-ads-mcp
+        upstream: https://meta-ads.mcp.pipeboard.co
+        tools: []
+
+    google-ads-remote:
+        dateAdded: "2026-03-16T00:00:00Z"
+        description: Pipeboard Google Ads Remote MCP for Google ad analysis and management.
+        title: Google Ads Remote
+        type: remote
+        dynamic:
+            tools: true
+        ref: ""
+        remote:
+            transport_type: streamable-http
+            url: "https://google-ads.mcp.pipeboard.co/?token=pk_89f5caf9a08044008cd987c49c9df216"
+        metadata:
+            category: marketing
+            license: BSL-1.1
+            owner: pipeboard
+            tags:
+                - google
+                - ads
+                - remote
+        prompts: 0
+        resources: {}
+        source: https://github.com/pipeboard-co/google-ads-mcp
+        upstream: https://google-ads.mcp.pipeboard.co
+        tools: []

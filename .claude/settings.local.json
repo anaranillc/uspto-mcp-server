@@ -20,7 +20,10 @@
       "Bash(docker build:*)",
       "Bash(docker run:*)",
       "Bash(printf '{\"\"\"\"jsonrpc\"\"\"\":\"\"\"\"2.0\"\"\"\",\"\"\"\"id\"\"\"\":1,\"\"\"\"method\"\"\"\":\"\"\"\"initialize\"\"\"\",\"\"\"\"params\"\"\"\":{\"\"\"\"protocolVersion\"\"\"\":\"\"\"\"2024-11-05\"\"\"\",\"\"\"\"capabilities\"\"\"\":{},\"\"\"\"clientInfo\"\"\"\":{\"\"\"\"name\"\"\"\":\"\"\"\"test\"\"\"\",\"\"\"\"version\"\"\"\":\"\"\"\"1.0\"\"\"\"}}}\\\\n{\"\"\"\"jsonrpc\"\"\"\":\"\"\"\"2.0\"\"\"\",\"\"\"\"id\"\"\"\":2,\"\"\"\"method\"\"\"\":\"\"\"\"notifications/initialized\"\"\"\"}\\\\n{\"\"\"\"jsonrpc\"\"\"\":\"\"\"\"2.0\"\"\"\",\"\"\"\"id\"\"\"\":3,\"\"\"\"method\"\"\"\":\"\"\"\"tools/list\"\"\"\",\"\"\"\"params\"\"\"\":{}}\\\\n')",
-      "Bash(python -c \"import sys,json; data=json.load\\(sys.stdin\\); tools=data[''''result''''][''''tools'''']; print\\(f''''Total tools: {len\\(tools\\)}''''\\); [print\\(f''''  {i+1}. {t[\"\"name\"\"]}''''\\) for i,t in enumerate\\(tools\\)]\")"
+      "Bash(python -c \"import sys,json; data=json.load\\(sys.stdin\\); tools=data[''''result''''][''''tools'''']; print\\(f''''Total tools: {len\\(tools\\)}''''\\); [print\\(f''''  {i+1}. {t[\"\"name\"\"]}''''\\) for i,t in enumerate\\(tools\\)]\")",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ]
   }
 }
