@@ -140,6 +140,112 @@ registry:
         type: server
         upstream: https://hub.docker.com/r/mcp/shopify
 
+    printful:
+        dateAdded: "2025-03-27T00:00:00Z"
+        description: Printful MCP Server - manage print-on-demand products, orders, variants, and shipments.
+        icon: ""
+        image: printful-mcp:latest
+        metadata:
+            category: ecommerce
+            license: MIT
+            owner: molt-bot
+            tags:
+                - printful
+                - print-on-demand
+                - products
+                - orders
+                - ecommerce
+        prompts: 0
+        ref: ""
+        resources: {}
+        secrets:
+            - description: Printful API key from https://www.printful.com/dashboard (Settings > API)
+              env: PRINTFUL_API_KEY
+              example: your_printful_api_key
+              name: printful.api_key
+        env:
+            - name: PRINTFUL_API_KEY
+              value: '{{printful.api_key}}'
+        command:
+            - sh
+            - -lc
+            - |
+                cat >/tmp/printful-patch.mjs <<'EOF'
+                const apiModule = await import('/app/dist/printful-api.js');
+                const { PrintfulAPI } = apiModule;
+                PrintfulAPI.prototype.getStores = async function () {
+                  const response = await this.client.get('/stores');
+                  return response.data;
+                };
+                PrintfulAPI.prototype.resolveDefaultStoreId = async function () {
+                  if (this.defaultStoreId) return this.defaultStoreId;
+                  const storesResponse = await this.getStores();
+                  const stores = storesResponse?.result || [];
+                  const preferredStore = stores.find((store) => store?.type === 'shopify') || stores.find((store) => store?.type === 'native') || stores[0];
+                  if (!preferredStore?.id) throw new Error('No accessible Printful store found for this API key');
+                  this.defaultStoreId = preferredStore.id;
+                  return this.defaultStoreId;
+                };
+                PrintfulAPI.prototype.getStore = async function () {
+                  const storeId = await this.resolveDefaultStoreId();
+                  const response = await this.client.get('/store', { params: { store_id: storeId } });
+                  return response.data;
+                };
+                PrintfulAPI.prototype.getProducts = async function (limit = 25, offset = 0) {
+                  const storeId = await this.resolveDefaultStoreId();
+                  const response = await this.client.get('/sync/products', { params: { store_id: storeId, limit, offset } });
+                  return response.data;
+                };
+                PrintfulAPI.prototype.getProduct = async function (productId) {
+                  const storeId = await this.resolveDefaultStoreId();
+                  const response = await this.client.get(`/sync/products/${productId}`, { params: { store_id: storeId } });
+                  return response.data;
+                };
+                PrintfulAPI.prototype.searchProducts = async function (query) {
+                  const normalizedQuery = String(query || '').trim().toLowerCase();
+                  const response = await this.getProducts(100, 0);
+                  const products = response?.result || [];
+                  const filtered = products.filter((product) => [product?.name, product?.external_id, product?.id].filter(Boolean).map((value) => String(value).toLowerCase()).some((value) => value.includes(normalizedQuery)));
+                  return { ...response, result: filtered, extra: { ...(response?.extra || {}), search_query: query, matched: filtered.length } };
+                };
+                PrintfulAPI.prototype.getProductVariants = async function (productId) {
+                  const response = await this.getProduct(productId);
+                  return { code: response?.code, result: response?.result?.sync_variants || [], extra: response?.extra || [] };
+                };
+                PrintfulAPI.prototype.getOrders = async function (status, limit = 25, offset = 0) {
+                  const storeId = await this.resolveDefaultStoreId();
+                  const params = { store_id: storeId, limit, offset };
+                  if (status) params.status = status;
+                  const response = await this.client.get('/orders', { params });
+                  return response.data;
+                };
+                PrintfulAPI.prototype.createOrder = async function (orderData) {
+                  const storeId = await this.resolveDefaultStoreId();
+                  const response = await this.client.post('/orders', { store_id: storeId, ...orderData });
+                  return response.data;
+                };
+                await import('/app/dist/index.js');
+                EOF
+                exec node /tmp/printful-patch.mjs
+        source: https://github.com/molt-bot/printful-mcp
+        title: Printful
+        tools:
+            - name: get_store_info
+            - name: list_products
+            - name: get_product
+            - name: search_products
+            - name: get_product_variants
+            - name: get_orders
+            - name: get_order
+            - name: create_order
+            - name: get_order_shipments
+            - name: list_catalog_products
+            - name: get_countries
+            - name: get_country_states
+            - name: calculate_tax
+        type: server
+        upstream: https://github.com/molt-bot/printful-mcp
+
     printify:
         dateAdded: "2026-03-16T00:00:00Z"
         description: Printify MCP Server - manage print-on-demand products, shops, orders, and catalog on Printify.
@@ -258,7 +364,7 @@ registry:
         ref: ""
         env:
             - name: METRICOOL_USER_TOKEN
-              value: '{{metricool.api_key}}'
+              value: '{{metricool.api_token}}'
             - name: METRICOOL_USER_ID
               value: '4321869'
         metadata:
