@@ -1,0 +1,20 @@
+# Python build artifacts
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Local editor / tooling config (never commit)
+.claude/
+.firecrawl/
+
+# Backups and scratch
+*.bak
+*.bak-*
+catalog.yaml.bak*
+
+# Secrets — never commit real credentials; use Docker MCP secrets / env vars
+.env
+.env.*
+*secret*
