@@ -21,9 +21,10 @@ A [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server that ex
 
 | Source | Base URL | Used for |
 |--------|----------|----------|
-| **ODP** (primary) | `https://api.uspto.gov` | Patents, applications, PTAB, appeals, interferences, petitions, datasets |
+| **ODP** (primary) | `https://api.uspto.gov` | Patents, applications, PTAB, appeals, interferences, petitions, and bulk data products |
 | **TSDR** | `https://tsdrapi.uspto.gov` | Trademark status and documents |
-| **PatentsView** (optional) | `https://search.patentsview.org` | Supplementary granted-patent enrichment — only used if `PATENTSVIEW_API_KEY` is set. Note: PatentsView has suspended issuing new API keys. |
+| **DS-API** | `https://developer.uspto.gov/ds-api` | Legacy USPTO dataset record search (`list_datasets`, `list_dataset_fields`, `search_dataset`) — no API key required |
+| **PatentsView** (optional) | `https://search.patentsview.org` | Supplementary granted-patent enrichment — only used if `PATENTSVIEW_API_KEY` is set. PatentsView is no longer issuing new keys and its public API is winding down; treat as optional and possibly unavailable. |
 
 ## Requirements
 

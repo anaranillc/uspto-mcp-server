@@ -432,7 +432,7 @@ async def _get_client() -> httpx.AsyncClient:
     """Lazy singleton — one connection pool for all requests."""
 ```
 
-Uses `httpx.AsyncClient` with a 60-second timeout, connection pooling, and redirect following.
+Uses `httpx.AsyncClient` with a 30-second timeout, connection pooling, and redirect following.
 
 ### Three HTTP Helpers
 
@@ -445,12 +445,13 @@ Uses `httpx.AsyncClient` with a 60-second timeout, connection pooling, and redir
 ### Retry Strategy
 
 ```python
-MAX_RETRIES = 3
-RETRY_STATUS_CODES = {429, 500, 502, 503, 504}
+_MAX_RETRIES = 2          # up to 2 retries = 3 attempts total
+_RETRY_STATUSES = {429, 500, 502, 503, 504}
+_RETRY_BACKOFF = 1.0      # seconds, doubles each retry
 ```
 
-- Exponential backoff: 1s, 2s, 4s
-- Only retries on transient errors (429/5xx)
+- Exponential backoff: 1s, then 2s
+- Only retries on transient errors (429/5xx) and connect/read timeouts
 - Non-retryable errors (400, 403, 404) raise immediately
 - Last exception is re-raised after all retries exhausted
 
@@ -779,17 +780,17 @@ def _odp_search_body(q=None, filters=None, range_filters=None,
 ### Step 5: Retry Logic
 
 ```python
-MAX_RETRIES = 3
-RETRY_STATUS_CODES = {429, 500, 502, 503, 504}
+_MAX_RETRIES = 2          # 3 attempts total
+_RETRY_STATUSES = {429, 500, 502, 503, 504}
 
 # For each request:
-for attempt in range(MAX_RETRIES):
-    response = await client.get/post(...)
-    if response.status_code in RETRY_STATUS_CODES and attempt < MAX_RETRIES - 1:
-        await asyncio.sleep(2 ** attempt)  # 1s, 2s, 4s
+for attempt in range(_MAX_RETRIES + 1):
+    resp = await client.get_or_post(...)
+    if resp.status_code in _RETRY_STATUSES and attempt < _MAX_RETRIES:
+        await asyncio.sleep(1.0 * (2 ** attempt))  # 1s, 2s
         continue
-    response.raise_for_status()
-    return response.json()
+    resp.raise_for_status()
+    return _parse_response(resp)
 ```
 
 ### Step 6: Docker Build
@@ -816,11 +817,12 @@ echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"capabilities":{}}
 | `requirements.txt` | 2 | Python dependencies | Build only |
 | `Dockerfile` | 12 | Container definition | Build only |
 | `catalog.yaml` | 64 | Docker MCP Gateway catalog registration | Gateway config |
-| `swagger.yaml` | 2624 | Official ODP OpenAPI 3.0.1 spec | Reference only |
+| `swagger.yaml` | 2624 | Official ODP OpenAPI 3.0.1 spec (partial — `$ref`s to `odp-common-base.yaml`, which is **not** bundled) | Reference only |
 | `resources/USPTO_ODP_API_Reference.md` | 372 | Compiled API reference from official docs | Reference only |
 | `resources/patent_data_schema.json` | ~5000+ | Full 274-field JSON schema | Reference only |
-| `resources/README.md` | 33 | Resource directory index | Reference only |
-| `.firecrawl/swagger.md` | varies | Scraped Swagger UI content | Reference only |
+| `resources/REFERENCES.md` | ~30 | Resource directory index | Reference only |
+| `resources/ODP_API_Query_Spec.pdf` | — | Official USPTO Simplified Query Syntax spec | Reference only |
+| `resources/PEDS_to_ODP_Mapping.pdf` | — | Official PEDS→ODP endpoint migration mapping | Reference only |
 
 ---
 
@@ -830,9 +832,9 @@ echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"capabilities":{}}
 
 1. **API Key activation uncertainty** — The key may need manual activation at https://account.uspto.gov/api-manager/ for `api.uspto.gov`. If you get 403, this is the first thing to check.
 
-2. **PatentsView key grants suspended** — New API key registration at patentsview.org is temporarily suspended. The `PATENTSVIEW_API_KEY` functionality works but you cannot get a new key.
+2. **PatentsView winding down** — PatentsView is no longer issuing new API keys and its public search API is being deprecated. The `PATENTSVIEW_API_KEY` path still runs if you already hold a key, but this backend is additive-only and may be unavailable; ODP results return regardless.
 
-3. **catalog.yaml tool list is stale** — Lists 12 tools (from before the rewrite) instead of the current 20. Should be updated.
+3. **Single key for ODP + TSDR is assumed, not confirmed** — The server sends one `USPTO_API_KEY` to both ODP (`x-api-key`) and TSDR (`USPTO-API-KEY`). This assumes a single credential authenticates both. Verify with a live `trademark_status` call — USPTO may issue separate TSDR keys, in which case the trademark tools need their own key.
 
 4. **GET search not exposed** — The `GET /api/v1/patent/applications/search` endpoint accepts query-string parameters. We only use POST (more powerful), but GET could be useful for simple queries or debugging.
 
