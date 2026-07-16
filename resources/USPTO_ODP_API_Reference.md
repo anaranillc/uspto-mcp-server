@@ -3,7 +3,8 @@
 > Compiled from official USPTO documentation: PEDS-to-ODP Mapping, ODP API Query Spec, and patent-data-schema.json.
 > Base URL: `https://api.uspto.gov`
 > Authentication: `X-API-KEY` header (obtain from My ODP at data.uspto.gov)
-> Date: 2026-03-15
+>
+> **Current as of March 15, 2026.** This reference reflects the USPTO ODP API on that date. The API may have changed since — verify against the [official USPTO documentation](https://data.uspto.gov/apis/getting-started) for anything time-sensitive.
 
 ---
 

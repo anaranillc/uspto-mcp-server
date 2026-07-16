@@ -4,6 +4,10 @@ These documents are the authoritative source for the USPTO APIs this server wrap
 See the [root README](../README.md) for how to run the server, and
 [`TECHNICAL_HANDOFF.md`](../TECHNICAL_HANDOFF.md) for architecture and implementation detail.
 
+> **Reference material compiled March 15, 2026.** USPTO APIs evolve — verify currency
+> against the [official USPTO documentation](https://data.uspto.gov/apis/getting-started)
+> before relying on any time-sensitive detail.
+
 ## Files
 
 | File | Description |
@@ -12,7 +16,6 @@ See the [root README](../README.md) for how to run the server, and
 | `patent_data_schema.json` | Full 274-field JSON schema for patent data responses. Use for understanding response structure and valid field names. |
 | `ODP_API_Query_Spec.pdf` | Official USPTO "Simplified Query Syntax" document. Covers GET/POST search, q parameter DSL, filters, rangeFilters, sort, fields, pagination, facets. |
 | `PEDS_to_ODP_Mapping.pdf` | Official PEDS→ODP migration mapping. Shows old PEDS endpoints → new ODP equivalents. Key source for endpoint URLs and document download flow. |
-| `USPTO_API_Key_Transcript.pdf` | How to obtain an API key (ID.me + USPTO account required). |
 
 ## Key API notes
 
