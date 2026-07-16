@@ -6,6 +6,8 @@ A [Model Context Protocol](https://modelcontextprotocol.io) (MCP) server that ex
 - Runs as a **Docker container** over stdio, or directly with Python
 - Ships with a **Docker MCP Gateway** catalog definition ([`catalog.yaml`](catalog.yaml))
 
+> ⚠️ Output is unofficial USPTO data and may be incomplete or stale. Not legal advice; verify against official records before relying on it. See [Disclaimer](#disclaimer).
+
 ## Tools
 
 | Area | Tools |
@@ -68,6 +70,29 @@ python server.py
 - [`TECHNICAL_HANDOFF.md`](TECHNICAL_HANDOFF.md) — full architecture, tool-to-endpoint inventory, ODP query DSL, retry logic, deployment, and troubleshooting.
 - [`resources/`](resources/) — USPTO API reference documents (ODP query spec, PEDS→ODP mapping, field schema). See [`resources/REFERENCES.md`](resources/REFERENCES.md).
 
+## Disclaimer
+
+This software is provided for informational and technical purposes only.
+
+- **Not legal advice.** Nothing produced by this software constitutes legal
+  advice, and using it creates no attorney–client relationship. It is not a
+  substitute for the professional judgment of a licensed attorney.
+- **Data accuracy.** Results are returned from third-party USPTO APIs and may be
+  incomplete, delayed, or inaccurate. Output is unofficial and unverified. Do
+  **not** rely on it for docketing, filing deadlines, statutory dates, or any
+  other legally significant purpose without independently verifying against
+  official USPTO records.
+- Provided "AS IS," without warranty of any kind, to the extent permitted by
+  law. See [`LICENSE`](LICENSE) and [`NOTICE`](NOTICE).
+
+## Non-affiliation
+
+This is an independent, unofficial project. It is **not affiliated with or
+endorsed by the USPTO** or any U.S. government agency. See [`NOTICE`](NOTICE) for
+attribution of USPTO names, marks, and reference materials.
+
 ## License
 
-MIT
+Licensed under the [Apache License 2.0](LICENSE). USPTO-sourced reference
+materials bundled in this repository are not original to the project and are not
+covered by that grant — see [`NOTICE`](NOTICE).

@@ -6,7 +6,7 @@ registry:
         image: uspto-mcp-server:latest
         metadata:
             category: legal
-            license: MIT
+            license: Apache-2.0
             owner: anaranillc
             tags:
                 - uspto

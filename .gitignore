@@ -17,4 +17,5 @@ catalog.yaml.bak*
 # Secrets — never commit real credentials; use Docker MCP secrets / env vars
 .env
 .env.*
+!.env.example
 *secret*
