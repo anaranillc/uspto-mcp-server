@@ -272,7 +272,7 @@ The `q` parameter in ODP search endpoints accepts a powerful query DSL. This is 
 
 | Pattern | Example | Notes |
 |---------|---------|-------|
-| Keywords | `artificial intelligence` | Free-text search |
+| Keywords | `vacation rental` | Free-text search |
 | Field:Value | `applicationMetaData.patentNumber:10467553` | Field must be fully qualified |
 | AND | `Utility AND Design` | Boolean AND |
 | OR | `Small OR Micro` | Boolean OR |
@@ -880,7 +880,7 @@ curl -X POST "https://api.uspto.gov/api/v1/patent/applications/search" \
   -H "x-api-key: YOUR_KEY" \
   -H "Content-Type: application/json" \
   -H "Accept: application/json" \
-  -d '{"q":"applicationMetaData.inventionTitle:\"artificial intelligence\"","pagination":{"offset":0,"limit":5}}'
+  -d '{"q":"applicationMetaData.inventionTitle:\"booking availability\"","pagination":{"offset":0,"limit":5}}'
 ```
 
 ### Patent Lookup (GET)

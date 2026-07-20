@@ -64,10 +64,10 @@ GET /api/v1/patent/applications/search?q=applicationMetaData.patentNumber:104675
 GET /api/v1/patent/applications/search?q=applicationNumberText:13802025
 
 # Search by inventor
-GET /api/v1/patent/applications/search?q=applicationMetaData.inventorBag.inventorNameText:Googl*
+GET /api/v1/patent/applications/search?q=applicationMetaData.inventorBag.inventorNameText:Blecharczyk
 
 # Search by applicant
-GET /api/v1/patent/applications/search?q=applicationMetaData.firstApplicantName:Nordisk
+GET /api/v1/patent/applications/search?q=applicationMetaData.firstApplicantName:Airbnb
 
 # Search by title (quoted phrase)
 GET /api/v1/patent/applications/search?q=applicationMetaData.inventionTitle:%22booking%20availability%22

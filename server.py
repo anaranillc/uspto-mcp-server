@@ -572,9 +572,9 @@ async def patent_search(
     automatically expanded to fully-qualified names.
 
     Query examples:
-      - Plain keywords: "artificial intelligence"
+      - Plain keywords: "vacation rental"
       - By title: applicationMetaData.inventionTitle:"booking availability"
-      - By applicant: applicationMetaData.firstApplicantName:Google
+      - By applicant: applicationMetaData.firstApplicantName:Airbnb
       - By patent number: applicationMetaData.patentNumber:10467553
       - By application number: applicationNumberText:13802025
       - Date range: applicationMetaData.filingDate:[2024-01-01 TO 2024-12-31]
